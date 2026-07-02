@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SINTÉTICO — Mostra de Cinema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@200;300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a0a0c;
+      --surface: #141418;
+      --accent: #d32f2f;
+      --accent-dim: #b71c1c;
+      --text: #f0ede8;
+      --muted: #88858a;
+      --gap: clamp(3rem, 6vw, 6rem);
+      --video-opacity: 1;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 125%;
+    }
+
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      width: min(1200px, 94%);
+      margin-inline: auto;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 0.75rem 0;
+      backdrop-filter: blur(12px);
+      background: rgba(10, 10, 12, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    nav a {
+      color: var(--muted);
+      transition: color .2s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-toggle {
+      display: none;
+      position: absolute;
+      right: 5%;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1rem 4rem;
+      overflow: hidden;
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: var(--video-opacity);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.7;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(10, 10, 12, 0.45), rgba(10, 10, 12, 0.85)),
+        radial-gradient(ellipse 50% 50% at 20% 80%, rgba(10, 10, 12, 0.3), rgba(10, 10, 12, 0.9));
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-logo {
+      max-width: min(90vw, 1080px);
+      margin: 0 auto;
+    }
+
+    .hero .sub {
+      margin-top: 2rem;
+      font-size: clamp(0.9rem, 2vw, 1.15rem);
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-inline: auto;
+    }
+
+    .hero .date {
+      margin-top: 0.75rem;
+      font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+      color: var(--accent-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .hero .btn {
+      display: inline-block;
+      margin-top: 2.5rem;
+      padding: 0.9rem 2.8rem;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      transition: all .3s;
+    }
+
+    .hero .btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+      text-decoration: none;
+    }
+
+    .hero .instagram-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--accent-dim);
+      letter-spacing: 0.08em;
+      transition: color .2s;
+    }
+
+    .hero .instagram-link:hover {
+      color: var(--accent);
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      padding: var(--gap) 0;
+    }
+
+    section h2 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 200;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    section h2 span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ─── PROGRAMAÇÃO ─── */
+    .film-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .film-card {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 2rem;
+      transition: border-color .3s;
+    }
+
+    .film-card:hover {
+      border-color: rgba(211, 47, 47, 0.2);
+    }
+
+    .film-card .poster {
+      aspect-ratio: 2 / 3;
+      width: 100%;
+      object-fit: cover;
+      background: linear-gradient(135deg, #1a1a20, #22222a);
+      margin-bottom: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: border-color .3s, transform .3s;
+    }
+
+    .film-card:hover .poster {
+      border-color: rgba(211, 47, 47, 0.4);
+      transform: scale(1.02);
+    }
+
+    .film-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    .film-card .original-title {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      font-style: italic;
+    }
+
+    .film-card .meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      line-height: 1.4;
+    }
+
+    /* ─── LOCAL ─── */
+    .local-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .local-info h3 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .local-info p {
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .local-map {
+      aspect-ratio: 4 / 3;
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+    }
+
+    .local-map iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ─── APOIO ─── */
+    .sponsor-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 3rem 5rem;
+      align-items: center;
+    }
+
+    .sponsor-item {
+      width: 200px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .3s;
+      filter: brightness(0.9);
+    }
+
+    .sponsor-item:hover {
+      opacity: 0.7;
+    }
+
+    .sponsor-item img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* ─── ORGANIZADORES & DEBATE ─── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .team-card {
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .team-card:hover {
+      border-color: rgba(211, 47, 47, 0.2);
+    }
+
+    .team-photo {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      filter: grayscale(1);
+      transition: filter 0.3s, border-color 0.3s;
+    }
+
+    .team-card:hover .team-photo {
+      filter: grayscale(0);
+      border-color: var(--accent);
+    }
+
+    .team-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text);
+    }
+
+    .team-title {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+      font-weight: 500;
+    }
+
+    .team-bio {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 2rem 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    footer a {
+      color: var(--accent-dim);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (width <=768px) {
+      nav ul {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        flex-direction: column;
+        gap: 0;
+        background: rgba(10, 10, 12, 0.95);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 0.5rem 0;
+      }
+
+      nav ul.open {
+        display: flex;
+      }
+
+      nav ul a {
+        display: block;
+        padding: 0.75rem 5%;
+      }
+
+      nav .container {
+        justify-content: flex-end;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      .local-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container">
+      <button class="nav-toggle" aria-label="Menu"
+        onclick="document.querySelector('nav ul').classList.toggle('open')">☰</button>
+      <ul>
+        <li><a href="#programacao">Programação</a></li>
+        <li><a href="#debate">Debate</a></li>
+        <li><a href="#organizadores">Organizadores</a></li>
+        <li><a href="#local">Local</a></li>
+        <li><a href="#apoio">Apoio</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <video class="hero-video" autoplay muted loop playsinline poster="video_hero_sintetico.mp4">
+      <source src="video_hero_sintetico_loop.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="container">
+      <img class="hero-logo" src="sintetico-logo.png" alt="SINTÉTICO — Mostra de Cinema">
+      <p class="sub">1ª Mostra de Filmes de Inteligência Artificial</p>
+      <p class="date">13 DE AGOSTO / 2026 / GYN</p>
+      <a href="#programacao" class="btn">Ver Programação</a>
+      <br>
+      <a class="instagram-link" href="https://instagram.com/iasintetico" target="_blank">@iasintetico</a>
+    </div>
+  </section>
+
+  <!-- PROGRAMAÇÃO -->
+  <section id="programacao">
+    <div class="container">
+      <h2><span>Programação</span></h2>
+      <div class="film-grid">
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0008_The-Cinema-That-Never-Was.png"
+            alt="Poster de O Cinema que Nunca Existiu">
+          <h3>O Cinema que Nunca Existiu</h3>
+          <span class="original-title">The Cinema That Never Was</span>
+          <p class="meta">Mark Wachholz · 2025</p>
+          <p class="meta">5'31"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0007_Total-Pixel-Space.png" alt="Poster de Espaço Pixel Total">
+          <h3>Espaço Pixel Total</h3>
+          <span class="original-title">Total Pixel Space</span>
+          <p class="meta">Jacob Adler · 2025</p>
+          <p class="meta">9'27"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0006_The-Crow.png" alt="Poster de O Corvo">
+          <h3>O Corvo</h3>
+          <span class="original-title">The Crow</span>
+          <p class="meta">Glenn Marshall · 2021</p>
+          <p class="meta">3'04"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0005_The-Golems-of-Ostroleka.png"
+            alt="Poster de Os Golems de Ostroleka">
+          <h3>Os Golems de Ostroleka</h3>
+          <span class="original-title">The Golems of Ostroleka</span>
+          <p class="meta">Jacob Adler · 2024</p>
+          <p class="meta">9'27"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0004_Hells-Cemetery.png" alt="Poster de Cemitério do Inferno">
+          <h3>Cemitério do Inferno</h3>
+          <span class="original-title">Hell's Cemetery</span>
+          <p class="meta">Jacob Devine · 2024</p>
+          <p class="meta">2'38"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0003_The-Colorless-Man.png" alt="Poster de O Homem Sem Cor">
+          <h3>O Homem Sem Cor</h3>
+          <span class="original-title">The Colorless Man</span>
+          <p class="meta">Hashem Al-Ghaili · 2025</p>
+          <p class="meta">13'45"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0002_ava.png" alt="Poster de Ava">
+          <h3>Ava</h3>
+          <span class="original-title">Ava</span>
+          <p class="meta">Daniel Titz · 2025</p>
+          <p class="meta">2'11"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0001_The-Adventures-of-Reemo-Green.png"
+            alt="Poster de As Aventuras de Reemo Green">
+          <h3>As Aventuras de Reemo Green</h3>
+          <span class="original-title">The Adventures of Reemo Green</span>
+          <p class="meta">Neural Viz · 2025</p>
+          <p class="meta">11'08"</p>
+        </article>
+
+        <article class="film-card">
+          <img class="poster" src="thumbs_0000_Antonomasia.png" alt="Poster de Antonomásia">
+          <h3>Antonomásia</h3>
+          <span class="original-title">Antonomasia</span>
+          <p class="meta">IZA Voku · 2025</p>
+          <p class="meta">3'47"</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DEBATE -->
+  <section id="debate">
+    <div class="container">
+      <h2><span>Debate</span></h2>
+      <div class="team-grid">
+
+        <div class="team-card">
+          <img class="team-photo" src="member_carol_verri.png" alt="Carol Verri">
+          <h3 class="team-name">Carol Verri</h3>
+          <span class="team-title">Pesquisadora & Curadora</span>
+          <p class="team-bio">Doutoranda em Comunicação e especialista em cinema e novas mídias. Investiga a estética
+            das imagens sintéticas.</p>
+        </div>
+
+        <div class="team-card">
+          <img class="team-photo" src="member_marcilon_almeida.png" alt="Marck Al">
+          <h3 class="team-name">Marck Al</h3>
+          <span class="team-title">Designer & Professor</span>
+          <p class="team-bio">Designer e Professor na FIC-UFG e PPGACT MediaLab UFG</p>
+        </div>
+
+        <div class="team-card">
+          <img class="team-photo" src="member_guilherme_mendonca.png" alt="Guilherme Mendonça">
+          <h3 class="team-name">Guilherme Mendonça</h3>
+          <span class="team-title">Crítico & Pesquisador</span>
+          <p class="team-bio">Estudioso de teoria do cinema e curador de mostras de arte independente. Dedica-se à
+            análise da IA na cultura pop.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ORGANIZADORES -->
+  <section id="organizadores">
+    <div class="container">
+      <h2><span>Organizadores</span></h2>
+      <div class="team-grid">
+
+        <div class="team-card">
+          <img class="team-photo" src="member_daniel_christino.png" alt="Daniel Christino">
+          <h3 class="team-name">Daniel Christino</h3>
+          <span class="team-title">Professor & Pesquisador</span>
+        </div>
+
+        <div class="team-card">
+          <img class="team-photo" src="member_radrigo_cassio.png" alt="Radrigo Cássio">
+          <h3 class="team-name">Radrigo Cássio</h3>
+          <span class="team-title">Professor & Crítico de Cinema</span>
+        </div>
+
+        <div class="team-card">
+          <img class="team-photo" src="member_marcilon_almeida.png" alt="Marcilon Almeida">
+          <h3 class="team-name">Marck Al</h3>
+          <span class="team-title">Designer & Professor</span>
+        </div>
+
+        <div class="team-card">
+          <img class="team-photo" src="member_carol_verri.png" alt="Carol Verri">
+          <h3 class="team-name">Carol Verri</h3>
+          <span class="team-title">Pesquisadora & Produtora</span>
+        </div>
+
+        <div class="team-card">
+          <img class="team-photo" src="member_thamyres_assis.png" alt="Thamyres de Assis">
+          <h3 class="team-name">Thamyres de Assis</h3>
+          <span class="team-title">Pesquisadora & Produtora</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCAL -->
+  <section id="local">
+    <div class="container">
+      <h2><span>Local</span></h2>
+      <div class="local-wrapper">
+        <div class="local-info">
+          <h3>Cine Cultura</h3>
+          <p>Centro Cultural Marietta Telles Machado</p>
+          <p>Praça Cívica, nº 2 — Centro</p>
+          <p>Goiânia / GO</p>
+        </div>
+        <div class="local-map">
+          <iframe
+            src="https://maps.google.com/maps?q=Pra%C3%A7a+C%C3%ADvica+2+Goi%C3%A2nia&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APOIO -->
+  <section id="apoio">
+    <div class="container">
+      <h2><span>Apoio</span></h2>
+      <div class="sponsor-list">
+        <div class="sponsor-item">
+          <img src="fic_logo.png" alt="FIC — Faculdade de Informação e Comunicação">
+        </div>
+        <div class="sponsor-item">
+          <img src="cinecultura_logo.png" alt="Cine Cultura">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>© 2026 <a href="#">SINTÉTICO</a> — Mostra de Cinema. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+</body>
+
+</html>
